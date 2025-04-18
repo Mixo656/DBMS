@@ -1,0 +1,84 @@
+Absolutely! Here's the updated full set of queries including:
+
+1. **Creating the database**
+2. **Using the database**
+3. **Creating the table `Employee1`**
+4. **Using aggregate functions**
+5. **Using `GROUP BY` and `ORDER BY`**
+
+---
+
+### ✅ Step 1: Create and Use Database
+
+```sql
+CREATE DATABASE IF NOT EXISTS CompanyDB;
+USE CompanyDB;
+```
+
+---
+
+### ✅ Step 2: Create the `Employee1` Table
+
+```sql
+CREATE TABLE Employee1 (
+    E_id INT PRIMARY KEY,
+    E_name VARCHAR(50),
+    Age INT,
+    Salary DECIMAL(10, 2)
+);
+```
+
+---
+
+### ✅ Step 3: Insert Sample Records
+
+```sql
+INSERT INTO Employee1 VALUES (1, 'Ravi', 30, 50000.00);
+INSERT INTO Employee1 VALUES (2, 'Neha', 25, 60000.00);
+INSERT INTO Employee1 VALUES (3, 'Amit', 28, 45000.00);
+INSERT INTO Employee1 VALUES (4, 'Priya', 35, 80000.00);
+INSERT INTO Employee1 VALUES (5, 'Raj', 30, 50000.00);
+```
+
+---
+
+### ✅ Step 4: Aggregate and Grouping Queries
+
+#### ➤ Count number of employees:
+```sql
+SELECT COUNT(E_name) AS Total_Employees FROM Employee1;
+```
+
+#### ➤ Find the maximum age:
+```sql
+SELECT MAX(Age) AS Max_Age FROM Employee1;
+```
+
+#### ➤ Find the minimum age:
+```sql
+SELECT MIN(Age) AS Min_Age FROM Employee1;
+```
+
+#### ➤ Find salaries in ascending order:
+```sql
+SELECT E_name, Salary FROM Employee1
+ORDER BY Salary ASC;
+```
+
+#### ➤ Group salaries of employees:
+```sql
+SELECT Salary, COUNT(*) AS Num_Employees
+FROM Employee1
+GROUP BY Salary;
+```
+
+#### ➤ (Bonus) Average salary per age group:
+```sql
+SELECT Age, AVG(Salary) AS Avg_Salary
+FROM Employee1
+GROUP BY Age;
+```
+
+---
+
+Let me know if you want to add conditions (`WHERE`, `HAVING`) or export the result!

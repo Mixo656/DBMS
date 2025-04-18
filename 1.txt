@@ -1,0 +1,88 @@
+Here's how you can complete each of the steps you've mentioned in MySQL. I'll walk you through each step clearly:
+
+---
+
+### ✅ **1. Create `Employee` table**
+
+```sql
+CREATE DATABASE IF NOT EXISTS employee_db;
+USE employee_db;
+
+CREATE TABLE Employee (
+    EMPNO INT,
+    ENAME VARCHAR(100),
+    JOB VARCHAR(50),
+    MANAGER_NO INT,
+    SAL DECIMAL(10, 2),
+    COMMISSION DECIMAL(10, 2)
+);
+```
+
+---
+
+### ✅ **2. Create a user and grant all permissions**
+
+```sql
+-- Replace 'user1' and 'password123' with your desired username and password
+CREATE USER IF NOT EXISTS 'user1'@'localhost' IDENTIFIED BY 'password123';
+
+-- Grant all privileges on the database to the user
+GRANT ALL PRIVILEGES ON employee_db.* TO 'user1'@'localhost';
+
+-- Reload privileges
+FLUSH PRIVILEGES;
+```
+
+---
+
+### ✅ **3. Insert three records and use ROLLBACK**
+
+> MySQL needs **transactions** to use `ROLLBACK`. Use the `START TRANSACTION` statement.
+
+```sql
+START TRANSACTION;
+
+INSERT INTO Employee (EMPNO, ENAME, JOB, MANAGER_NO, SAL, COMMISSION) VALUES
+(101, 'Ravi', 'Manager', 201, 50000, 2000),
+(102, 'Sneha', 'Analyst', 101, 40000, 1500),
+(103, 'Kiran', 'Clerk', 102, 30000, 1000);
+
+-- ROLLBACK to undo the inserts
+ROLLBACK;
+
+-- Check if data exists
+SELECT * FROM Employee;
+-- Result: Table should be empty
+```
+
+---
+
+### ✅ **4. Add Primary Key and NOT NULL constraints**
+
+```sql
+-- First, alter the table to add NOT NULL constraint
+ALTER TABLE Employee
+MODIFY EMPNO INT NOT NULL,
+MODIFY ENAME VARCHAR(100) NOT NULL;
+
+-- Then add PRIMARY KEY
+ALTER TABLE Employee
+ADD PRIMARY KEY (EMPNO);
+```
+
+---
+
+### ✅ **5. Try inserting NULL values (should fail)**
+
+```sql
+-- This will throw an error because EMPNO and ENAME are NOT NULL and EMPNO is a PRIMARY KEY
+INSERT INTO Employee (EMPNO, ENAME, JOB, MANAGER_NO, SAL, COMMISSION) VALUES
+(NULL, NULL, 'Intern', 103, 15000, 500);
+```
+
+✅ **Expected Result:** MySQL will reject the insert with an error like:  
+> `ERROR 1048 (23000): Column 'EMPNO' cannot be null`
+
+---
+
+Would you like me to bundle all this into a single SQL script for easy copy-paste?

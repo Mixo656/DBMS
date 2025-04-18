@@ -1,0 +1,118 @@
+Sure! Here's how you can **create a full MySQL database setup**, including the database, `CUSTOMERS` table, and all the necessary triggers to track salary changes.
+
+---
+
+### ✅ Step 1: Create the Database
+
+```sql
+CREATE DATABASE company_db;
+USE company_db;
+```
+
+---
+
+### ✅ Step 2: Create the `CUSTOMERS` Table
+
+```sql
+CREATE TABLE CUSTOMERS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(100),
+    AGE INT,
+    ADDRESS VARCHAR(255),
+    SALARY DECIMAL(10,2)
+);
+```
+
+---
+
+### ✅ Step 3: Create the `salary_log` Table (for trigger logging)
+
+```sql
+CREATE TABLE salary_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    action_type VARCHAR(10),
+    customer_id INT,
+    old_salary DECIMAL(10,2),
+    new_salary DECIMAL(10,2),
+    difference DECIMAL(10,2),
+    log_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+---
+
+### ✅ Step 4: Create Triggers for INSERT, UPDATE, and DELETE
+
+#### 🔹 `AFTER UPDATE` Trigger
+
+```sql
+DELIMITER //
+
+CREATE TRIGGER trg_salary_diff_update
+AFTER UPDATE ON CUSTOMERS
+FOR EACH ROW
+BEGIN
+    IF OLD.SALARY IS NOT NULL AND NEW.SALARY IS NOT NULL AND OLD.SALARY != NEW.SALARY THEN
+        INSERT INTO salary_log (action_type, customer_id, old_salary, new_salary, difference)
+        VALUES ('UPDATE', OLD.ID, OLD.SALARY, NEW.SALARY, NEW.SALARY - OLD.SALARY);
+    END IF;
+END;
+//
+
+DELIMITER ;
+```
+
+#### 🔹 `AFTER INSERT` Trigger
+
+```sql
+DELIMITER //
+
+CREATE TRIGGER trg_salary_diff_insert
+AFTER INSERT ON CUSTOMERS
+FOR EACH ROW
+BEGIN
+    INSERT INTO salary_log (action_type, customer_id, new_salary)
+    VALUES ('INSERT', NEW.ID, NEW.SALARY);
+END;
+//
+
+DELIMITER ;
+```
+
+#### 🔹 `AFTER DELETE` Trigger
+
+```sql
+DELIMITER //
+
+CREATE TRIGGER trg_salary_diff_delete
+AFTER DELETE ON CUSTOMERS
+FOR EACH ROW
+BEGIN
+    INSERT INTO salary_log (action_type, customer_id, old_salary)
+    VALUES ('DELETE', OLD.ID, OLD.SALARY);
+END;
+//
+
+DELIMITER ;
+```
+
+---
+
+### ✅ Step 5: Test It Out
+
+```sql
+-- Add a record
+INSERT INTO CUSTOMERS (ID, NAME, AGE, ADDRESS, SALARY)
+VALUES (1, 'Alice', 30, '123 Main St', 50000);
+
+-- Update salary
+UPDATE CUSTOMERS SET SALARY = 52000 WHERE ID = 1;
+
+-- Delete the record
+DELETE FROM CUSTOMERS WHERE ID = 1;
+
+-- Check log
+SELECT * FROM salary_log;
+```
+
+Let me know if you’d like a script to run all of this at once or need help exporting it into a `.sql` file.

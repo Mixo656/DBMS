@@ -1,0 +1,81 @@
+Sure! Here's the **complete MySQL setup** that includes:
+
+1. Creating the **database**
+2. Creating the **Employee** table
+3. Inserting sample data
+4. Creating the **cursor-based stored procedure**
+5. Calling the procedure to display data
+
+---
+
+### ✅ Full SQL Script
+
+```sql
+-- Step 1: Create the database
+CREATE DATABASE IF NOT EXISTS company_db;
+USE company_db;
+
+-- Step 2: Create the Employee table
+CREATE TABLE IF NOT EXISTS Employee (
+    E_id INT PRIMARY KEY,
+    E_name VARCHAR(100),
+    Age INT,
+    Salary DECIMAL(10,2)
+);
+
+-- Step 3: Insert sample data
+INSERT INTO Employee (E_id, E_name, Age, Salary) VALUES
+(1, 'Alice', 30, 50000),
+(2, 'Bob', 28, 45000),
+(3, 'Charlie', 35, 55000);
+
+-- Step 4: Create the stored procedure using a cursor
+DELIMITER //
+
+CREATE PROCEDURE ReadEmployees()
+BEGIN
+    -- Declare variables
+    DECLARE v_id INT;
+    DECLARE v_name VARCHAR(100);
+    DECLARE v_age INT;
+    DECLARE v_salary DECIMAL(10,2);
+    DECLARE done INT DEFAULT 0;
+
+    -- Declare the cursor
+    DECLARE emp_cursor CURSOR FOR
+        SELECT E_id, E_name, Age, Salary FROM Employee;
+
+    -- Continue handler for end of cursor
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    -- Open the cursor
+    OPEN emp_cursor;
+
+    read_loop: LOOP
+        FETCH emp_cursor INTO v_id, v_name, v_age, v_salary;
+
+        IF done = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Output each row
+        SELECT CONCAT('ID: ', v_id, ', Name: ', v_name, ', Age: ', v_age, ', Salary: ', v_salary);
+    END LOOP;
+
+    -- Close the cursor
+    CLOSE emp_cursor;
+END;
+//
+
+DELIMITER ;
+
+-- Step 5: Call the procedure
+CALL ReadEmployees();
+```
+
+---
+
+### 📝 Output:
+Each row of the Employee table will be displayed using the `SELECT CONCAT(...)` line inside the loop.
+
+Let me know if you'd like to modify the logic (like filtering by salary, inserting into a log table, etc).
